@@ -53,21 +53,22 @@
             NavBar,
             TabControl,
             BScroll,
-            BackTop
+            BackTop,
         },
         data() {
             return {
-                banners: [],
-                recommends: [],
-                goods: {
+                banners: [], //轮播图数据
+                recommends: [], //推荐数据
+                goods: { // 商品列表数据初始化
                     'new': { page: 0, list: [] },
                     'pop': { page: 0, list: [] },
                     'sell': { page: 0, list: [] }
                 },
-                currentType: "pop",
-                isShowBackTop: false,
-                tabOffsetTop: 0,
-                isTabFixed: false
+                currentType: "pop", //默认数据类型
+                isShowBackTop: false,//回到最顶层控制按钮
+                tabOffsetTop: 0,//滚动的距离
+                isTabFixed: false, //控制吸顶
+                saveY:0 //组件销毁记录的位置
             }
         },
         computed: {
@@ -87,6 +88,23 @@
             //精选
             this._getHomeGoods("sell");
 
+        },
+        destroyed(){
+            // console.log("destroyed");
+            
+        },
+        activated(){
+            // console.log("activated");
+            // console.log(this.saveY);
+            //进入传递上一次保存的位置
+            this.$refs.scroll.scrollTo(0,this.saveY,0)
+            //重新计算滚动的距离
+            this.$refs.scroll.refresh();
+        },
+        deactivated(){
+            //离开保存位置
+            // console.log("deactivated");
+            this.saveY=this.$refs.scroll.y;
         },
         mounted() {
             const refresh = debounce(this.$refs.scroll.refresh, 50);
@@ -113,7 +131,7 @@
             },
             //上拉加载更多
             loadMore() {
-                console.log("上拉加载更多");
+                // console.log("上拉加载更多");
                 this._getHomeGoods(this.currentType);
                 //刷新可滚动的区域
                 this.$refs.scroll.refresh();
@@ -150,6 +168,7 @@
                         this.currentType = "sell"
                         break;
                 }
+                //把点击的index返回
                 this.$refs.tabControl1.currentIndex = index;
                 this.$refs.tabControl2.currentIndex = index;
             },

@@ -46,6 +46,12 @@
         })
       }
     },
+    computed:{
+           //封装传递
+           y(){
+                return this.scroll ? this.scroll.y : 0;
+           }
+    },
     methods: {
       scrollTo(x, y, tiem = 300) {
         this.scroll && this.scroll.scrollTo(x, y, tiem)
@@ -56,7 +62,7 @@
       refresh() {
         this.scroll && this.scroll.refresh();
         // console.log("------");
-      }
+      },
     }
   }
 </script>

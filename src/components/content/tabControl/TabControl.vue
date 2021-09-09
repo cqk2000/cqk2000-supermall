@@ -9,6 +9,7 @@
   export default {
     name: 'TabControl',
     props: {
+      //父组件向子组件传值
       titles: {
         type: Array,
         default() {
@@ -18,12 +19,15 @@
     },
     data() {
       return {
+        //计数器
         currentIndex: 0
       }
     },
     methods: {
       tabClick(index) {
+        //计数器等于点击的按钮下标
         this.currentIndex = index;
+        //发送一个事件给对象.并且把值传递出去
         this.$emit("tabClick",index);
       }
     }
