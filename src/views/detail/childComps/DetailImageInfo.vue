@@ -1,4 +1,5 @@
 <template>
+     <!-- 商品展示 -->
     <div class="image-info" v-if="Object.keys(imagesInfo).length !== 0">
       <div class="info-desc clear-fix">
         <div class="start"></div>
@@ -39,6 +40,7 @@
     },
     methods: {
       imgLoad() {
+        //如等于图片数量则进入只添加一次
         if (++this.count === this.imagesLength) {
           this.$emit("imageLoad");
         }

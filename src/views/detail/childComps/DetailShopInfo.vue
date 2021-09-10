@@ -1,4 +1,5 @@
 <template>
+     <!-- 店铺信息 -->
     <div class="shop-info" v-if="Object.keys(shop).length !== 0">
       <div class="shop-top">
         <img :src="shop.logo" alt="" v-if="shop.logo" />

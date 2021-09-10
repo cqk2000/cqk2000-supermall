@@ -1,4 +1,5 @@
 <template>
+    <!-- 参数详情 -->
     <div class="param-info" v-if="Object.keys(paramInfo).length !== 0">
       <p>参数信息</p>
       <table :key="index" class="info-size" v-for="(table, index) in paramInfo.sizes">

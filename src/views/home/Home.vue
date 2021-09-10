@@ -11,7 +11,7 @@
             <recommend-view :recommeds="recommends"></recommend-view>
             <!-- <li v-for="item in banners">{{item}}</li> -->
             <feature-view></feature-view>
-            <tab-control class="tab-control" :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl2">
+            <tab-control  :titles="['流行','新款','精选']" @tabClick="tabClick" ref="tabControl2">
             </tab-control>
             <goods-list :goods="showGoods"></goods-list>
         </b-scroll>
@@ -43,6 +43,7 @@
 
     //js工具  
     import { debounce } from "common/utils.js"
+    import {itemListenerMixin} from "common/mixin.js"
     export default {
         name: 'Home',
         components: {
@@ -53,8 +54,9 @@
             NavBar,
             TabControl,
             BScroll,
-            BackTop,
+            BackTop
         },
+        mixins:[itemListenerMixin],
         data() {
             return {
                 banners: [], //轮播图数据
@@ -68,7 +70,8 @@
                 isShowBackTop: false,//回到最顶层控制按钮
                 tabOffsetTop: 0,//滚动的距离
                 isTabFixed: false, //控制吸顶
-                saveY:0 //组件销毁记录的位置
+                saveY: 0,//组件销毁记录的位置
+                itemImgListener: null  //保存监听函数
             }
         },
         computed: {
@@ -89,30 +92,35 @@
             this._getHomeGoods("sell");
 
         },
-        destroyed(){
+        destroyed() {
             // console.log("destroyed");
-            
+
         },
-        activated(){
+        activated() {
             // console.log("activated");
             // console.log(this.saveY);
             //进入传递上一次保存的位置
-            this.$refs.scroll.scrollTo(0,this.saveY,0)
+            this.$refs.scroll.scrollTo(0, this.saveY, 0)
             //重新计算滚动的距离
             this.$refs.scroll.refresh();
         },
-        deactivated(){
+        deactivated() {
             //离开保存位置
             // console.log("deactivated");
-            this.saveY=this.$refs.scroll.y;
+            //1.保存y值
+            this.saveY = this.$refs.scroll.y;
+            //2.取消全局事件的监听
+            this.$bus.$off('itemImgLoad', this.itemImgListener);
         },
         mounted() {
-            const refresh = debounce(this.$refs.scroll.refresh, 50);
-            this.$bus.$on("itemImageLoad", () => {
-                //  console.log("------");
-                // this.$refs.scroll.refresh();
-                refresh();
-            })
+            //被编入混入
+            // const refresh = debounce(this.$refs.scroll.refresh, 50);
+            // this.itemImgListener = () => {
+            //     //  console.log("------");
+            //     // this.$refs.scroll.refresh();
+            //     refresh();
+            // }
+            // this.$bus.$on("itemImageLoad", this.itemImgListener);
         },
         methods: {
             // // 事件监听防抖节流  
@@ -188,6 +196,7 @@
                     //   console.log(res);
                     this.goods[type].list.push(...res.data.data.list);
                     this.goods[type].page += 1;
+                    //从新计算高度
                     this.$refs.scroll.finishPullUp();
                 })
             },

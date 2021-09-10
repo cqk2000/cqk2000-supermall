@@ -10,12 +10,12 @@ export function request(config) {
     timeout: 5000
   })
   //6.定义请求拦截器
-   instance.interceptors.request.use(config=>{
-          return config
-   })
+  instance.interceptors.request.use(config => {
+    return config
+  })
   //7.定义响应拦截器
-  instance.interceptors.response.use(res=>{
-          return res
+  instance.interceptors.response.use(res => {
+    return res
   })
   //8.发送请求
   return instance(config)

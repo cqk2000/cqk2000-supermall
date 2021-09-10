@@ -26,6 +26,7 @@ export class Goods {
   }
 }
 
+// 封装对象类
 // 店铺数据
 export class Shop {
   constructor(shopInfo) {
@@ -37,6 +38,14 @@ export class Shop {
     this.goodsCount = shopInfo.cGoods;
   }
 }
+//推荐数据
+export function getRecommend(){
+  return request({
+          url:"/recommend",
+          method:"get"
+  })
+}
+
 
 // 尺寸数据
 export class GoodsParams {

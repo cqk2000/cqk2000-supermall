@@ -1,4 +1,5 @@
 <template>
+  <!-- 导航条 -->
   <nav-bar>
     <div slot="left" @click="backClick"><img class="back" src="~assets/img/common/back.svg" alt=""></div>
     <div slot="center" class="title">
@@ -11,8 +12,6 @@
 <script>
   import NavBar from 'components/common/navbar/NavBar.vue'
 
- 
-
   export default {
     components: {
       NavBar
@@ -21,13 +20,14 @@
       return {
         titles: ["商品", "参数", "评论", "推荐"],
         currentIndex: 0,
-
       }
     },
    
     methods: {
       titleClick(i) {
         this.currentIndex = i;
+        //发送事件
+        this.$emit("titleClick",i);
       },
       backClick(){
         //  history.back();

@@ -47,7 +47,7 @@
       }
     },
     mounted() {
-      console.log(this.goods);
+      // console.log(this.goods);
     }
   }
 </script>

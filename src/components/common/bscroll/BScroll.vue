@@ -53,12 +53,15 @@
            }
     },
     methods: {
+      //滚动的距离
       scrollTo(x, y, tiem = 300) {
         this.scroll && this.scroll.scrollTo(x, y, tiem)
       },
+      //重复调用上拉加载
       finishPullUp() {
         this.scroll && this.scroll.finishPullUp()
       },
+      //刷新重新计算高度
       refresh() {
         this.scroll && this.scroll.refresh();
         // console.log("------");
