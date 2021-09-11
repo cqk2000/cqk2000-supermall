@@ -11,6 +11,8 @@
       <detail-comment-info :commentInfo="commentInfo" ref="comment"></detail-comment-info>
       <goods-list :goods="recommends" ref="goodsList"></goods-list>
     </scroll>
+    <detail-bottom-bar @addCart="addTopCart"></detail-bottom-bar>
+    <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
   </div>
 </template>
 <script>
@@ -21,6 +23,9 @@
   import DetailImageInfo from 'views/detail/childComps/DetailImageInfo.vue'
   import DetailParamInfo from 'views/detail/childComps/DetailParamInfo.vue'
   import DetailCommentInfo from 'views/detail/childComps/DetailCommentInfo.vue'
+  import DetailBottomBar from 'views/detail/childComps/DetailBottomBar.vue'
+  import BackTop from "components/content/backTop/BackTop.vue"
+
 
   import Scroll from 'components/common/bscroll/BScroll.vue'
   import GoodsList from 'components/content/goods/GoodsList.vue'
@@ -39,7 +44,9 @@
       DetailParamInfo,
       DetailCommentInfo,
       Scroll,
-      GoodsList
+      GoodsList,
+      DetailBottomBar,
+      BackTop
     },
     mixins: [itemListenerMixin],
     data() {
@@ -55,7 +62,8 @@
         itemImgListener: null,//保存函数
         themeTopYs: [0],//位置的存储器
         getThemeTopY: null,
-        currentIndex: 0
+        currentIndex: 0,
+        isShowBackTop:false
       }
     },
     created() {
@@ -70,16 +78,33 @@
         const param = this.$refs.param.$el.offsetTop;
         const comment = this.$refs.comment.$el.offsetTop;
         const goodsList = this.$refs.goodsList.$el.offsetTop;
-        this.themeTopYs.push(0, param, comment, goodsList);
-        console.log(this.themeTopYs);
+        this.themeTopYs.push(0, param, comment, goodsList, Number.MAX_VALUE);
+        // console.log(this.themeTopYs);
         // this.themeTopYs.push(param);
         // this.themeTopYs.push(comment);
         // this.themeTopYs.push(goodsList);
-
       })
     },
     methods: {
+      addTopCart(){
+            //1.获取购物车需要展示的信息
+            const product = {}; 
+            product.image = this.topImages[0];
+            product.title = this.goods.title;
+            product.desc = this.goods.desc;
+            product.price = this.goods.lowNowPrice;
+            product.iid = this.lid; 
+            // console.log(product);
+            //2.将商品添加到购物车里
+            // this.$store.commit("addList",product);
+            this.$store.dispatch("addList",product);
+      },
+      backClick(){
+        this.$refs.scroll.scrollTo(0, 0);
+      },
       contentScroll(position) {
+        //回到最顶部
+        this.isShowBackTop = (-position.y) > 1000;
         // console.log(position.y);
         //1.获取y值
         const positionY = -position.y;
@@ -89,10 +114,21 @@
         for (let i = 0; i < length; i++) {
           // if (positionY > this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]) {
           // }
-          //1.联动效果实现
-          if (this.currentIndex !== i && (i < length - 1 && positionY >= this.themeTopYs[i]
-            && positionY < this.themeTopYs[i + 1]) ||
-            (i === length - 1 && positionY >= this.themeTopYs[i])) {
+          //1.联动效果实现 (普通的写法)
+          // if (this.currentIndex !== i &&
+          //  (i < length - 1 && positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i + 1]) ||
+          //  (i === length - 1 && positionY >= this.themeTopYs[i])) {
+          //   this.currentIndex = i;
+          //   // console.log(this.currentIndex);
+          //   this.$refs.nav.currentIndex = this.currentIndex;
+          // }
+          //2.hack 写法
+          //2.1 如果当前计数器不等于 i 则进入下一个判断条件  
+          //2.2 并且滚动条大于等于指定的位置 
+          //2.3 并且滚动条小于下一个位置则执行i+1 
+          if (this.currentIndex !== i &&
+            (positionY >= this.themeTopYs[i] &&
+              positionY < this.themeTopYs[i + 1])) {
             this.currentIndex = i;
             // console.log(this.currentIndex);
             this.$refs.nav.currentIndex = this.currentIndex;
@@ -113,7 +149,7 @@
         getRecommend().then(res => {
           const data = res.data.data;
           this.recommends = data.list;
-          console.log(this.recommends);
+          // console.log(this.recommends);
         })
       },
       //解决滚轮到底卡顿问题
@@ -193,7 +229,7 @@
   }
 
   .content {
-    height: calc(100% - 44px);
+    height: calc(100% - 44px - 49px);
   }
 
   [v-cloak] {
