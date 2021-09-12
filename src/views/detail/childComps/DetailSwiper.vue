@@ -2,7 +2,9 @@
     <!-- 轮播图 -->
     <swiper class="detail-swiper">
       <swiper-item v-for="(item,i) in topImages" :key="i">
-        <img :src="item" alt="">
+        <!-- <img :src="item" alt=""> -->
+         <!-- 懒加载 -->
+        <img v-lazy="item" alt="">
       </swiper-item>
     </swiper>
 </template>

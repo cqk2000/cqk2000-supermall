@@ -2,7 +2,7 @@
   <swiper>
     <swiper-item v-for="(item,i) of banners" :key="i">
       <a :href="item.link">
-        <img :src="item.image" alt="" @load="imageLoad">
+        <img width="375.1" height="195.1" v-lazy="item.image" alt="" @load="imageLoad">
       </a>
     </swiper-item>
   </swiper>

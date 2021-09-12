@@ -2,7 +2,7 @@
      <!-- 店铺信息 -->
     <div class="shop-info" v-if="Object.keys(shop).length !== 0">
       <div class="shop-top">
-        <img :src="shop.logo" alt="" v-if="shop.logo" />
+        <img v-lazy="shop.logo" alt="" v-if="shop.logo" />
         <span class="title">{{ shop.name }}</span>
       </div>
       <div class="shop-middle">

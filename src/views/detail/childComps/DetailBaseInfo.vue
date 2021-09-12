@@ -29,7 +29,7 @@
     <!-- 4.发货描述 -->
     <div class="info-service">
       <span class="info-service-item" v-for="index in goods.services.length - 1" v-if="goods.services[index-1].icon">
-        <img :src="goods.services[index-1].icon" alt="">
+        <img v-lazy="goods.services[index-1].icon" alt="">
         <span>{{goods.services[index-1].name}}</span>
       </span>
     </div>

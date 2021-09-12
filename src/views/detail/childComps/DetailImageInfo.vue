@@ -11,7 +11,7 @@
         <div class="info-list">
           <img
             :key="imageIndex"
-            :src="image"
+            v-lazy="image"
             @load="imgLoad"
             alt=""
             v-for="(image, imageIndex) in item.list"

@@ -1,7 +1,9 @@
 <template>
   <!-- 导航条 -->
   <nav-bar>
-    <div slot="left" @click="backClick"><img class="back" src="~assets/img/common/back.svg" alt=""></div>
+    <div slot="left" @click="backClick">
+      <img class="back" src="~assets/img/common/back.svg" alt="">
+    </div>
     <div slot="center" class="title">
       <div @click="titleClick(i)" :class="{active:i===currentIndex}" v-for="(item,i) in titles" :key="i"
         class="title-item">{{item}}</div>

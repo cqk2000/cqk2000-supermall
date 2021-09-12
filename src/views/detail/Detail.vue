@@ -1,9 +1,14 @@
 <template>
+  <!-- 商品详情组件 -->
   <div id="detail" v-cloak>
+    <!-- 顶部导航 -->
     <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="nav"></detail-nav-bar>
+    <!-- 滚动条 -->
     <scroll class="content" ref="scroll" :pullUpLoad="true" :probeType="3" @pullingUp="pullingUp"
       @scroll="contentScroll">
+      <!-- 商品详情轮播图 -->
       <detail-swiper :top-images="topImages"></detail-swiper>
+      <!-- 商品商店信息 -->
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
       <detail-image-info :images-info="shopInfo" @imageLoad="imageLoad"></detail-image-info>
@@ -13,6 +18,8 @@
     </scroll>
     <detail-bottom-bar @addCart="addTopCart"></detail-bottom-bar>
     <back-top @click.native="backClick" v-show="isShowBackTop"></back-top>
+    <!-- <toast :message="message" :show="show"></toast> -->
+    <!-- <toast></toast> -->
   </div>
 </template>
 <script>
@@ -25,11 +32,12 @@
   import DetailCommentInfo from 'views/detail/childComps/DetailCommentInfo.vue'
   import DetailBottomBar from 'views/detail/childComps/DetailBottomBar.vue'
   import BackTop from "components/content/backTop/BackTop.vue"
-
+  import Toast from "../../components/common/toast/Toast.vue"
 
   import Scroll from 'components/common/bscroll/BScroll.vue'
   import GoodsList from 'components/content/goods/GoodsList.vue'
   import { debounce } from "common/utils.js"
+  import { mapActions } from 'vuex'
   import { itemListenerMixin } from "common/mixin.js"
   //Detail 商品详情网络请求
   import { getDetail, Goods, Shop, GoodsParams, getRecommend } from "network/detail.js"
@@ -46,7 +54,8 @@
       Scroll,
       GoodsList,
       DetailBottomBar,
-      BackTop
+      BackTop,
+      Toast
     },
     mixins: [itemListenerMixin],
     data() {
@@ -61,9 +70,11 @@
         recommends: [],//推荐数据
         itemImgListener: null,//保存函数
         themeTopYs: [0],//位置的存储器
-        getThemeTopY: null,
-        currentIndex: 0,
-        isShowBackTop:false
+        getThemeTopY: null,//保存防抖函数
+        currentIndex: 0,//计数器
+        isShowBackTop: false, //返回的控制
+        message: "",
+        show: true
       }
     },
     created() {
@@ -75,9 +86,13 @@
       this.getThemeTopY = debounce(() => {
         this.themeTopYs = [];
         // this.themeTopYs.splice(0, this.themeTopYs.length);
+        //保存尺寸的滚动位置
         const param = this.$refs.param.$el.offsetTop;
+        //保存评论的滚动位置
         const comment = this.$refs.comment.$el.offsetTop;
+        //保存推荐列表的滚动位置
         const goodsList = this.$refs.goodsList.$el.offsetTop;
+        //保存的数据添加到记录器中
         this.themeTopYs.push(0, param, comment, goodsList, Number.MAX_VALUE);
         // console.log(this.themeTopYs);
         // this.themeTopYs.push(param);
@@ -86,20 +101,40 @@
       })
     },
     methods: {
-      addTopCart(){
-            //1.获取购物车需要展示的信息
-            const product = {}; 
-            product.image = this.topImages[0];
-            product.title = this.goods.title;
-            product.desc = this.goods.desc;
-            product.price = this.goods.lowNowPrice;
-            product.iid = this.lid; 
-            // console.log(product);
-            //2.将商品添加到购物车里
-            // this.$store.commit("addList",product);
-            this.$store.dispatch("addList",product);
+      //vuex 结构方法
+      ...mapActions({
+        add: "addList"
+      }),
+      // ...MapActions({
+      //       add:"addList"
+      // }),
+      addTopCart() {
+        //1.获取购物车需要展示的信息
+        const product = {};
+        product.image = this.topImages[0];
+        product.title = this.goods.title;
+        product.desc = this.goods.desc;
+        product.price = this.goods.lowNowPrice;
+        product.iid = this.lid;
+        // console.log(product);
+        //2.将商品添加到购物车里(1.Promise 2.mapActions)
+        // this.$store.commit("addList",product);
+        this.add(product).then(res => {
+          /*   this.message = res;
+            this.show =true;
+            let timer=setTimeout(() => {
+              this.show = false;
+              this.message = "";
+              clearTimeout(timer);
+            }, 2500) */
+          this.$toast.show(res, 1500);
+          // console.log(this.$toast);
+        });
+        // this.$store.dispatch("addList",product).then((res,err)=>{
+        //         console.log(res);
+        // });
       },
-      backClick(){
+      backClick() {
         this.$refs.scroll.scrollTo(0, 0);
       },
       contentScroll(position) {
