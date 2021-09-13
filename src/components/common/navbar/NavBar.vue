@@ -15,7 +15,7 @@ export default{
     .nav-bar{
           display: flex;
           line-height:44px;
-          /* height: 44px; */
+          height: 44px;
           /* border:1px solid red; */
           /* background: rebeccapurple; */
           text-align: center;
